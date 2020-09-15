@@ -534,7 +534,19 @@ class ArticlesGenerator(CachingGenerator):
 
     def generate_direct_templates(self, write):
         """Generate direct templates pages"""
+        hidden_cats = self.settings['HIDDEN_CATEGORIES']
         for template in self.settings['DIRECT_TEMPLATES']:
+            if template == "index":
+                # filter out categories that hide from the index template
+                # filter out here, before pagination occurs
+                articles = [article for article in self.articles
+                            if article.category not in hidden_cats]
+                dates = [article for article in self.dates
+                         if article in articles]
+            else:
+                articles = self.articles
+                dates = self.dates
+
             save_as = self.settings.get("%s_SAVE_AS" % template.upper(),
                                         '%s.html' % template)
             url = self.settings.get("%s_URL" % template.upper(),
