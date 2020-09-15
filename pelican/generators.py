@@ -306,7 +306,7 @@ class ArticlesGenerator(CachingGenerator):
                 self.context,
                 self.settings['FEED_ATOM'],
                 self.settings.get('FEED_ATOM_URL', self.settings['FEED_ATOM'])
-                )
+            )
 
         if self.settings.get('FEED_RSS'):
             writer.write_feed(
@@ -315,7 +315,7 @@ class ArticlesGenerator(CachingGenerator):
                 self.settings['FEED_RSS'],
                 self.settings.get('FEED_RSS_URL', self.settings['FEED_RSS']),
                 feed_type='rss'
-                )
+            )
 
         if (self.settings.get('FEED_ALL_ATOM') or
                 self.settings.get('FEED_ALL_RSS')):
@@ -332,7 +332,7 @@ class ArticlesGenerator(CachingGenerator):
                     self.settings['FEED_ALL_ATOM'],
                     self.settings.get('FEED_ALL_ATOM_URL',
                                       self.settings['FEED_ALL_ATOM'])
-                    )
+                )
 
             if self.settings.get('FEED_ALL_RSS'):
                 writer.write_feed(
@@ -342,7 +342,7 @@ class ArticlesGenerator(CachingGenerator):
                     self.settings.get('FEED_ALL_RSS_URL',
                                       self.settings['FEED_ALL_RSS']),
                     feed_type='rss'
-                    )
+                )
 
         for cat, arts in self.categories:
             if self.settings.get('CATEGORY_FEED_ATOM'):
@@ -354,9 +354,9 @@ class ArticlesGenerator(CachingGenerator):
                         'CATEGORY_FEED_ATOM_URL',
                         self.settings['CATEGORY_FEED_ATOM']).format(
                             slug=cat.slug
-                        ),
+                    ),
                     feed_title=cat.name
-                    )
+                )
 
             if self.settings.get('CATEGORY_FEED_RSS'):
                 writer.write_feed(
@@ -367,10 +367,10 @@ class ArticlesGenerator(CachingGenerator):
                         'CATEGORY_FEED_RSS_URL',
                         self.settings['CATEGORY_FEED_RSS']).format(
                             slug=cat.slug
-                        ),
+                    ),
                     feed_title=cat.name,
                     feed_type='rss'
-                    )
+                )
 
         for auth, arts in self.authors:
             if self.settings.get('AUTHOR_FEED_ATOM'):
@@ -381,9 +381,9 @@ class ArticlesGenerator(CachingGenerator):
                     self.settings.get(
                         'AUTHOR_FEED_ATOM_URL',
                         self.settings['AUTHOR_FEED_ATOM']
-                        ).format(slug=auth.slug),
+                    ).format(slug=auth.slug),
                     feed_title=auth.name
-                    )
+                )
 
             if self.settings.get('AUTHOR_FEED_RSS'):
                 writer.write_feed(
@@ -393,10 +393,10 @@ class ArticlesGenerator(CachingGenerator):
                     self.settings.get(
                         'AUTHOR_FEED_RSS_URL',
                         self.settings['AUTHOR_FEED_RSS']
-                        ).format(slug=auth.slug),
+                    ).format(slug=auth.slug),
                     feed_title=auth.name,
                     feed_type='rss'
-                    )
+                )
 
         if (self.settings.get('TAG_FEED_ATOM') or
                 self.settings.get('TAG_FEED_RSS')):
@@ -409,9 +409,9 @@ class ArticlesGenerator(CachingGenerator):
                         self.settings.get(
                             'TAG_FEED_ATOM_URL',
                             self.settings['TAG_FEED_ATOM']
-                            ).format(slug=tag.slug),
+                        ).format(slug=tag.slug),
                         feed_title=tag.name
-                        )
+                    )
 
                 if self.settings.get('TAG_FEED_RSS'):
                     writer.write_feed(
@@ -421,10 +421,10 @@ class ArticlesGenerator(CachingGenerator):
                         self.settings.get(
                             'TAG_FEED_RSS_URL',
                             self.settings['TAG_FEED_RSS']
-                            ).format(slug=tag.slug),
+                        ).format(slug=tag.slug),
                         feed_title=tag.name,
                         feed_type='rss'
-                        )
+                    )
 
         if (self.settings.get('TRANSLATION_FEED_ATOM') or
                 self.settings.get('TRANSLATION_FEED_RSS')):
@@ -444,8 +444,8 @@ class ArticlesGenerator(CachingGenerator):
                         self.settings.get(
                             'TRANSLATION_FEED_ATOM_URL',
                             self.settings['TRANSLATION_FEED_ATOM']
-                            ).format(lang=lang),
-                        )
+                        ).format(lang=lang),
+                    )
                 if self.settings.get('TRANSLATION_FEED_RSS'):
                     writer.write_feed(
                         items,
@@ -455,7 +455,7 @@ class ArticlesGenerator(CachingGenerator):
                         self.settings.get(
                             'TRANSLATION_FEED_RSS_URL',
                             self.settings['TRANSLATION_FEED_RSS']
-                            ).format(lang=lang),
+                        ).format(lang=lang),
                         feed_type='rss'
                         )
 
@@ -534,18 +534,22 @@ class ArticlesGenerator(CachingGenerator):
 
     def generate_direct_templates(self, write):
         """Generate direct templates pages"""
+        breakpoint()
         hidden_cats = self.settings['HIDDEN_CATEGORIES']
         for template in self.settings['DIRECT_TEMPLATES']:
             if template == "index":
                 # filter out categories that hide from the index template
                 # filter out here, before pagination occurs
-                articles = [article for article in self.articles
-                            if article.category not in hidden_cats]
-                dates = [article for article in self.dates
-                         if article in articles]
+                # articles = [article for article in self.articles
+                #             if article.category not in hidden_cats]
+                articles = []
+                for article in self.articles:
+                    category = article.category
+                    if category not in hidden_cats:
+                        articles.append(article)
+
             else:
                 articles = self.articles
-                dates = self.dates
 
             save_as = self.settings.get("%s_SAVE_AS" % template.upper(),
                                         '%s.html' % template)
@@ -555,7 +559,7 @@ class ArticlesGenerator(CachingGenerator):
                 continue
 
             write(save_as, self.get_template(template), self.context,
-                  articles=self.articles, dates=self.dates, blog=True,
+                  articles=articles, dates=self.dates, blog=True,
                   template_name=template,
                   page_name=os.path.splitext(save_as)[0], url=url)
 
