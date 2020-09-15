@@ -457,7 +457,7 @@ class ArticlesGenerator(CachingGenerator):
                             self.settings['TRANSLATION_FEED_RSS']
                         ).format(lang=lang),
                         feed_type='rss'
-                        )
+                    )
 
     def generate_articles(self, write):
         """Generate the articles."""
@@ -534,7 +534,6 @@ class ArticlesGenerator(CachingGenerator):
 
     def generate_direct_templates(self, write):
         """Generate direct templates pages"""
-        breakpoint()
         hidden_cats = self.settings['HIDDEN_CATEGORIES']
         for template in self.settings['DIRECT_TEMPLATES']:
             if template == "index":
@@ -919,7 +918,7 @@ class StaticGenerator(Generator):
                 logger.debug(
                     "Cross-device links not valid. "
                     "Creating symbolic links instead."
-                    )
+                )
                 self.fallback_to_symlinks = True
                 self._link_staticfile(sc)
             else:
